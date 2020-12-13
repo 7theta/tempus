@@ -8,15 +8,16 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any others, from this software.
 
-(defproject com.7theta/tempus "0.1.0"
+(defproject com.7theta/tempus "0.1.1"
   :description "Clojure(script) time library"
   :url "https://github.com/7theta/tempus"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[inflections "0.13.2"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [inflections "0.13.2"]
                  [com.cognitect/transit-clj "1.0.324" :exclusions [com.fasterxml.jackson.core/jackson-core]]]
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.10.1"]
-                                  [org.clojure/clojurescript "1.10.773"]
+  :profiles {:dev {:global-vars {*warn-on-reflection* true}
+                   :dependencies [[org.clojure/clojurescript "1.10.773"]
                                   [org.clojure/tools.namespace "1.0.0"]]
                    :source-paths ["dev"]}}
   :prep-tasks ["compile"]

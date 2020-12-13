@@ -40,7 +40,8 @@
 
 (defn into
   [type ts]
-  (let [to-long #(-> % :date-time (.toInstant) (.toEpochMilli))]
+  (let [to-long #(let [^OffsetDateTime dt (:date-time %)]
+                   (-> dt (.toInstant) (.toEpochMilli)))]
     (case type
       :long (to-long ts)
       :edn (to-long ts)
@@ -57,7 +58,7 @@
 
 (defn format
   [pattern ts]
-  (.format (:date-time ts) (DateTimeFormatter/ofPattern pattern)))
+  (.format ^OffsetDateTime (:date-time ts) (DateTimeFormatter/ofPattern pattern)))
 
 (defn parse
   ([s]
@@ -70,63 +71,65 @@
 
 (defn year
   [t]
-  (.getYear (:date-time t)))
+  (.getYear ^OffsetDateTime (:date-time t)))
 
 (defn month
   [t]
-  (.getMonthValue (:date-time t)))
+  (.getMonthValue ^OffsetDateTime (:date-time t)))
 
 (defn day
   [t]
-  (.getDayOfMonth (:date-time t)))
+  (.getDayOfMonth ^OffsetDateTime (:date-time t)))
 
 (defn hour
   [t]
-  (.getHour (:date-time t)))
+  (.getHour ^OffsetDateTime (:date-time t)))
 
 (defn minute
   [t]
-  (.getMinute (:date-time t)))
+  (.getMinute ^OffsetDateTime (:date-time t)))
 
 (defn second
   [t]
-  (.getSecond (:date-time t)))
+  (.getSecond ^OffsetDateTime (:date-time t)))
 
 (defn millisecond
   [t]
-  (quot (.getNano (:date-time t)) 1000000))
+  (quot (.getNano ^OffsetDateTime (:date-time t)) 1000000))
 
 (defn +
   [ts period]
-  (DateTime. (.plus (:date-time ts) (:value period)
-                    (case (:unit period)
-                      :years ChronoUnit/YEARS
-                      :months ChronoUnit/MONTHS
-                      :days ChronoUnit/DAYS
-                      :hours ChronoUnit/HOURS
-                      :minutes ChronoUnit/MINUTES
-                      :seconds ChronoUnit/SECONDS
-                      :milliseconds ChronoUnit/MILLIS))))
+  (DateTime. (.plus ^OffsetDateTime (:date-time ts)
+                    ^long (:value period)
+                    ^TemporalUnit (case (:unit period)
+                                    :years ChronoUnit/YEARS
+                                    :months ChronoUnit/MONTHS
+                                    :days ChronoUnit/DAYS
+                                    :hours ChronoUnit/HOURS
+                                    :minutes ChronoUnit/MINUTES
+                                    :seconds ChronoUnit/SECONDS
+                                    :milliseconds ChronoUnit/MILLIS))))
 
 (defn -
   [ts period]
-  (DateTime. (.minus (:date-time ts) (:value period)
-                     (case (:unit period)
-                       :years ChronoUnit/YEARS
-                       :months ChronoUnit/MONTHS
-                       :days ChronoUnit/DAYS
-                       :hours ChronoUnit/HOURS
-                       :minutes ChronoUnit/MINUTES
-                       :seconds ChronoUnit/SECONDS
-                       :milliseconds ChronoUnit/MILLIS))))
+  (DateTime. (.minus ^OffsetDateTime (:date-time ts)
+                     ^long (:value period)
+                     ^TemporalUnit (case (:unit period)
+                                     :years ChronoUnit/YEARS
+                                     :months ChronoUnit/MONTHS
+                                     :days ChronoUnit/DAYS
+                                     :hours ChronoUnit/HOURS
+                                     :minutes ChronoUnit/MINUTES
+                                     :seconds ChronoUnit/SECONDS
+                                     :milliseconds ChronoUnit/MILLIS))))
 
 (defn >
   [a b]
-  (.isAfter (:date-time a) (:date-time b)))
+  (.isAfter ^OffsetDateTime (:date-time a) ^OffsetDateTime (:date-time b)))
 
 (defn <
   [a b]
-  (.isBefore (:date-time a) (:date-time b)))
+  (.isBefore ^OffsetDateTime (:date-time a) ^OffsetDateTime (:date-time b)))
 
 (defn <=
   [a b]
