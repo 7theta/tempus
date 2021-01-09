@@ -97,44 +97,51 @@
   [t]
   (quot (.getNano ^OffsetDateTime (:date-time t)) 1000000))
 
+(defn- ^ChronoUnit native-unit
+  [unit]
+  (case unit
+    :years ChronoUnit/YEARS
+    :months ChronoUnit/MONTHS
+    :days ChronoUnit/DAYS
+    :hours ChronoUnit/HOURS
+    :minutes ChronoUnit/MINUTES
+    :seconds ChronoUnit/SECONDS
+    :milliseconds ChronoUnit/MILLIS))
+
 (defn +
-  [ts period]
-  (DateTime. (.plus ^OffsetDateTime (:date-time ts)
-                    ^long (:value period)
-                    ^TemporalUnit (case (:unit period)
-                                    :years ChronoUnit/YEARS
-                                    :months ChronoUnit/MONTHS
-                                    :days ChronoUnit/DAYS
-                                    :hours ChronoUnit/HOURS
-                                    :minutes ChronoUnit/MINUTES
-                                    :seconds ChronoUnit/SECONDS
-                                    :milliseconds ChronoUnit/MILLIS))))
+  [ts & durations]
+  (reduce (fn [ts duration]
+            (DateTime. (.plus ^OffsetDateTime (:date-time ts)
+                              ^long (:value duration)
+                              (native-unit (:unit duration))))) ts durations))
 
 (defn -
-  [ts period]
-  (DateTime. (.minus ^OffsetDateTime (:date-time ts)
-                     ^long (:value period)
-                     ^TemporalUnit (case (:unit period)
-                                     :years ChronoUnit/YEARS
-                                     :months ChronoUnit/MONTHS
-                                     :days ChronoUnit/DAYS
-                                     :hours ChronoUnit/HOURS
-                                     :minutes ChronoUnit/MINUTES
-                                     :seconds ChronoUnit/SECONDS
-                                     :milliseconds ChronoUnit/MILLIS))))
+  [ts & durations]
+  (reduce (fn [ts duration]
+            (DateTime. (.minus ^OffsetDateTime (:date-time ts)
+                               ^long (:value duration)
+                               (native-unit (:unit duration))))) ts durations))
 
 (defn >
-  [a b]
-  (.isAfter ^OffsetDateTime (:date-time a) ^OffsetDateTime (:date-time b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]]
+                 (.isAfter ^OffsetDateTime (:date-time a)
+                           ^OffsetDateTime (:date-time b))))))
 
 (defn <
-  [a b]
-  (.isBefore ^OffsetDateTime (:date-time a) ^OffsetDateTime (:date-time b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]]
+                 (.isBefore ^OffsetDateTime (:date-time a)
+                            ^OffsetDateTime (:date-time b))))))
 
 (defn <=
-  [a b]
-  (or (= a b) (< a b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (or (= a b) (< a b))))))
 
 (defn >=
-  [a b]
-  (or (= a b) (> a b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (or (= a b) (> a b))))))

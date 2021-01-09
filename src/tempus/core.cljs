@@ -83,41 +83,47 @@
   (.getUTCMilliseconds (:date-time t)))
 
 (defn +
-  [ts period]
-  (DateTime. ((case (:unit period)
-                :years date-fns/addYears
-                :months date-fns/addMonths
-                :days date-fns/addDays
-                :hours date-fns/addHours
-                :minutes date-fns/addMinutes
-                :seconds date-fns/addSeconds
-                :milliseconds date-fns/addMilliseconds)
-              (:date-time ts) (:value period))))
+  [ts & durations]
+  (reduce (fn [ts duration]
+            (DateTime. ((case (:unit duration)
+                          :years date-fns/addYears
+                          :months date-fns/addMonths
+                          :days date-fns/addDays
+                          :hours date-fns/addHours
+                          :minutes date-fns/addMinutes
+                          :seconds date-fns/addSeconds
+                          :milliseconds date-fns/addMilliseconds)
+                        (:date-time ts) (:value duration)))) ts durations))
 
 (defn -
-  [ts period]
-  (DateTime. ((case (:unit period)
-                :years date-fns/subYears
-                :months date-fns/subMonths
-                :days date-fns/subDays
-                :hours date-fns/subHours
-                :minutes date-fns/subMinutes
-                :seconds date-fns/subSeconds
-                :milliseconds date-fns/subMilliseconds)
-              (:date-time ts) (:value period))))
+  [ts & durations]
+  (reduce (fn [ts duration]
+            (DateTime. ((case (:unit duration)
+                          :years date-fns/subYears
+                          :months date-fns/subMonths
+                          :days date-fns/subDays
+                          :hours date-fns/subHours
+                          :minutes date-fns/subMinutes
+                          :seconds date-fns/subSeconds
+                          :milliseconds date-fns/subMilliseconds)
+                        (:date-time ts) (:value duration)))) ts durations))
 
 (defn >
-  [a b]
-  (date-fns/isAfter (:date-time a) (:date-time b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (date-fns/isAfter (:date-time a) (:date-time b))))))
 
 (defn <
-  [a b]
-  (date-fns/isBefore (:date-time a) (:date-time b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (date-fns/isBefore (:date-time a) (:date-time b))))))
 
 (defn <=
-  [a b]
-  (or (= a b) (< a b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (or (= a b) (< a b))))))
 
 (defn >=
-  [a b]
-  (or (= a b) (> a b)))
+  [& times]
+  (->> (partition 2 1 times)
+       (every? (fn [[a b]] (or (= a b) (> a b))))))
