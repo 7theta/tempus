@@ -12,9 +12,18 @@
   (:refer-clojure :exclude [+ - < > <= >= time second into format])
   (:import [java.time OffsetDateTime Clock ZoneOffset Instant]
            [java.time.temporal ChronoUnit]
-           [java.time.format DateTimeFormatter]))
+           [java.time.format DateTimeFormatter]
+           [java.lang Comparable Number]))
+
+(declare into)
 
 (defrecord DateTime [^OffsetDateTime date-time]
+  Comparable
+  (compareTo [this o]
+    (if (number? o)
+      (clojure.core/- (into :long this) o)
+      (clojure.core/- (into :long this) (into :long o))))
+
   Object
   (toString [_]
     (str "#tempus/date-time \"" (.toString date-time) "\"")))
