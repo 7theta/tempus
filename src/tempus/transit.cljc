@@ -17,5 +17,5 @@
 
 (def handlers {:read {"tempus/date-time" (transit/read-handler (partial t/from :edn))
                       "tempus/duration" (transit/read-handler (partial td/from :edn))}
-               :write {DateTime (transit/write-handler "tempus/date-time" (partial t/into :edn))
-                       Duration (transit/write-handler "tempus/duration" (partial td/into :edn))}})
+               :write {DateTime (transit/write-handler (constantly "tempus/date-time") (partial t/into :edn))
+                       Duration (transit/write-handler (constantly "tempus/duration") (partial td/into :edn))}})

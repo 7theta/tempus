@@ -8,7 +8,7 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any others, from this software.
 
-(defproject com.7theta/tempus "0.3.1"
+(defproject com.7theta/tempus "0.3.2"
   :description "Clojure(script) time library"
   :url "https://github.com/7theta/tempus"
   :license {:name "Eclipse Public License"
